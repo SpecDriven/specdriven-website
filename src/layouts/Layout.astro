@@ -178,9 +178,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://specdriv
     <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR-GA-ID"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function //gtag(){dataLayer.push(arguments);}
-      //gtag('js', new Date());
-      //gtag('config', 'YOUR-GA-ID');
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'YOUR-GA-ID');
     </script>
     -->
   </head>
@@ -204,17 +204,9 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://specdriv
         document.body.classList.add('loaded');
       });
 
-      // Core Web Vitals monitoring
+      // Core Web Vitals monitoring (analytics disabled)
       function sendToAnalytics(metric) {
-        // Replace with your analytics endpoint
-        if (typeof gtag !== 'undefined') {
-          //gtag('event', metric.name, {
-            event_category: 'Web Vitals',
-            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
-            event_label: metric.id,
-            non_interaction: true,
-          });
-        }
+        console.log('Web Vitals:', metric.name, Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value));
       }
 
       // Largest Contentful Paint (LCP)
@@ -264,24 +256,14 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://specdriv
         }
       });
 
-      // Error tracking
+      // Error tracking (analytics disabled)
       window.addEventListener('error', (event) => {
-        if (typeof gtag !== 'undefined') {
-          //gtag('event', 'exception', {
-            description: event.error?.message || 'Unknown error',
-            fatal: false
-          });
-        }
+        console.log('Error:', event.error?.message || 'Unknown error');
       });
 
-      // Unhandled promise rejection tracking
+      // Unhandled promise rejection tracking (analytics disabled)
       window.addEventListener('unhandledrejection', (event) => {
-        if (typeof gtag !== 'undefined') {
-          //gtag('event', 'exception', {
-            description: event.reason?.message || 'Unhandled promise rejection',
-            fatal: false
-          });
-        }
+        console.log('Unhandled promise rejection:', event.reason?.message || 'Unhandled promise rejection');
       });
     </script>
 
