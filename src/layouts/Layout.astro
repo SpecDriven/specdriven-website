@@ -1,0 +1,315 @@
+---
+// Base layout with SEO, performance optimization, and accessibility features
+export interface Props {
+  title: string;
+  description: string;
+  url?: string;
+  image?: string;
+  type?: string;
+}
+
+const {
+  title,
+  description,
+  url = 'https://specdriven.app',
+  image = 'https://specdriven.app/og-image.png',
+  type = 'website'
+} = Astro.props;
+
+// Generate canonical URL
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://specdriven.app');
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="keywords" content="spec-driven development, BDD, behavior driven development, AI code generation, product management, software consulting, Gherkin, requirements engineering, agile development" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Spec-Driven Consulting" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Page Title -->
+    <title>{title}</title>
+
+    <!-- Favicon and Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Spec-Driven Consulting" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+    <meta property="twitter:creator" content="@specdriven" />
+
+    <!-- LinkedIn -->
+    <meta property="og:image:alt" content="Spec-Driven Consulting - Transform Product Development with AI" />
+
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://assets.calendly.com" />
+    <link rel="preconnect" href="https://api.web3forms.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#4338CA" />
+    <meta name="msapplication-TileColor" content="#4338CA" />
+
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+
+    <!-- Disable automatic phone number detection -->
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Generator -->
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Styles -->
+    <style>
+      /* Critical CSS for above-the-fold content */
+      html {
+        font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #FAFAF9;
+        color: #1C1F26;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Loading state */
+      .loading {
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+
+      .loaded {
+        opacity: 1;
+      }
+
+      /* Skip link for accessibility */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: #2563eb;
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: top 0.3s;
+        z-index: 10000;
+      }
+
+      .skip-link:focus {
+        top: 6px;
+      }
+
+      /* Reduce motion for users who prefer it */
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+
+      /* High contrast mode support */
+      @media (prefers-contrast: high) {
+        body {
+          background-color: #000000;
+          color: #ffffff;
+        }
+      }
+
+      /* Print styles */
+      @media print {
+        .no-print {
+          display: none !important;
+        }
+
+        body {
+          font-size: 12pt;
+          line-height: 1.4;
+          color: #000000;
+          background: #ffffff;
+        }
+
+        a {
+          color: #000000;
+          text-decoration: underline;
+        }
+      }
+    </style>
+
+    <!-- Global Styles -->
+    <link rel="stylesheet" href="/src/styles/global.css" />
+
+    <!-- Analytics -->
+    <!-- Google Analytics 4 (replace with your tracking ID) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX', {
+        cookie_flags: 'SameSite=Strict;Secure',
+        anonymize_ip: true,
+        allow_google_signals: false,
+        allow_ad_personalization_signals: false
+      });
+    </script>
+
+    <!-- Cloudflare Web Analytics (replace with your beacon ID) -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "your-beacon-token"}'></script>
+  </head>
+
+  <body class="loading antialiased">
+    <!-- Skip link for accessibility -->
+    <a href="#main-content" class="skip-link">
+      Skip to main content
+    </a>
+
+    <!-- Page content -->
+    <div id="app" class="min-h-screen flex flex-col">
+      <slot />
+    </div>
+
+    <!-- Performance monitoring script -->
+    <script>
+      // Mark page as loaded
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.classList.remove('loading');
+        document.body.classList.add('loaded');
+      });
+
+      // Core Web Vitals monitoring
+      function sendToAnalytics(metric) {
+        // Replace with your analytics endpoint
+        if (typeof gtag !== 'undefined') {
+          gtag('event', metric.name, {
+            event_category: 'Web Vitals',
+            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+            event_label: metric.id,
+            non_interaction: true,
+          });
+        }
+      }
+
+      // Largest Contentful Paint (LCP)
+      new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+          if (entry.startTime < 3000) { // Only report LCP within 3 seconds
+            sendToAnalytics({
+              name: 'LCP',
+              value: entry.startTime,
+              id: entry.id || 'unknown'
+            });
+          }
+        }
+      }).observe({ entryTypes: ['largest-contentful-paint'] });
+
+      // First Input Delay (FID)
+      new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+          sendToAnalytics({
+            name: 'FID',
+            value: entry.processingStart - entry.startTime,
+            id: entry.name || 'unknown'
+          });
+        }
+      }).observe({ entryTypes: ['first-input'] });
+
+      // Cumulative Layout Shift (CLS)
+      let clsValue = 0;
+      let clsEntries = [];
+      new PerformanceObserver((entryList) => {
+        for (const entry of entryList.getEntries()) {
+          if (!entry.hadRecentInput) {
+            clsValue += entry.value;
+            clsEntries.push(entry);
+          }
+        }
+      }).observe({ entryTypes: ['layout-shift'] });
+
+      // Report CLS when the page lifecycle state changes to hidden
+      addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          sendToAnalytics({
+            name: 'CLS',
+            value: clsValue,
+            id: 'page-unload'
+          });
+        }
+      });
+
+      // Error tracking
+      window.addEventListener('error', (event) => {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'exception', {
+            description: event.error?.message || 'Unknown error',
+            fatal: false
+          });
+        }
+      });
+
+      // Unhandled promise rejection tracking
+      window.addEventListener('unhandledrejection', (event) => {
+        if (typeof gtag !== 'undefined') {
+          gtag('event', 'exception', {
+            description: event.reason?.message || 'Unhandled promise rejection',
+            fatal: false
+          });
+        }
+      });
+    </script>
+
+    <!-- Service Worker registration -->
+    <script>
+      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>

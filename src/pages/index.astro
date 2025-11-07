@@ -1,0 +1,250 @@
+---
+// Main landing page assembling all components
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Services from '../components/sections/Services.astro';
+import HowItWorks from '../components/sections/HowItWorks.astro';
+import ForYourTeam from '../components/sections/ForYourTeam.astro';
+import OurApproach from '../components/sections/OurApproach.astro';
+import ContactForm from '../components/ContactForm.astro';
+import Footer from '../components/Footer.astro';
+import CalendlyModal from '../components/CalendlyModal.astro';
+
+const pageTitle = 'Spec-Driven Consulting | Transform Product Development with AI';
+const pageDescription = 'Align PM, Dev, and Test around living specs to turn strategy into shipped outcomes. Expert consulting for enterprise teams adopting spec-driven development with AI code generation.';
+const pageUrl = 'https://specdriven.app';
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  url={pageUrl}
+>
+  <!-- Sticky Header -->
+  <Header />
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <Hero />
+
+    <!-- Services Section -->
+    <Services />
+
+    <!-- How It Works Section -->
+    <HowItWorks />
+
+    <!-- For Your Team Section -->
+    <ForYourTeam />
+
+    <!-- Our Approach Section -->
+    <OurApproach />
+
+    <!-- Contact Form Section -->
+    <ContactForm />
+  </main>
+
+  <!-- Footer -->
+  <Footer />
+
+  <!-- Calendly Modal (Lazy Loaded) -->
+  <CalendlyModal />
+
+  <!-- Initialize UTM Tracking -->
+  <script>
+    import { initializeUTMTracking } from '../lib/utm';
+
+    // Initialize UTM tracking on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        initializeUTMTracking();
+      } catch (error) {
+        console.warn('UTM tracking initialization failed:', error);
+      }
+    });
+
+    // Track page view for analytics
+    if (typeof window !== 'undefined' && 'gtag' in window) {
+      (window as any).gtag('config', 'G-XXXXXXXXXX', {
+        page_title: document.title,
+        page_location: window.location.href,
+      });
+    }
+
+    // Performance monitoring
+    if (typeof window !== 'undefined' && 'performance' in window) {
+      window.addEventListener('load', () => {
+        // Log Core Web Vitals for monitoring
+        setTimeout(() => {
+          const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+          if (navigation) {
+            console.log('Page Load Performance:', {
+              'DOM Content Loaded': navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+              'Load Complete': navigation.loadEventEnd - navigation.loadEventStart,
+              'First Paint': performance.getEntriesByName('first-paint')[0]?.startTime,
+              'First Contentful Paint': performance.getEntriesByName('first-contentful-paint')[0]?.startTime,
+            });
+          }
+        }, 1000);
+      });
+    }
+
+    // Service Worker registration for future PWA features
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        // Register service worker in production only
+        if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+          navigator.serviceWorker.register('/sw.js').catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+        }
+      });
+    }
+  </script>
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Spec-Driven Consulting",
+      "description": "Transform product development with spec-driven methodologies and AI code generation. Expert consulting for enterprise teams.",
+      "url": "https://specdriven.app",
+      "logo": "https://specdriven.app/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-555-SPEC-DRIVEN",
+        "contactType": "customer service",
+        "email": "leads@specdriven.app",
+        "availableLanguage": "English"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "US"
+      },
+      "sameAs": [
+        "https://linkedin.com/company/spec-driven",
+        "https://github.com/spec-driven"
+      ],
+      "service": [
+        {
+          "@type": "Service",
+          "name": "Assessment & Strategy",
+          "description": "Comprehensive analysis of current processes and transformation opportunities"
+        },
+        {
+          "@type": "Service",
+          "name": "BDD Implementation",
+          "description": "Behavior-driven development setup with executable specifications"
+        },
+        {
+          "@type": "Service",
+          "name": "AI Code Generation",
+          "description": "Deploy AI agents that convert specifications into production-ready code"
+        },
+        {
+          "@type": "Service",
+          "name": "Tool Integration",
+          "description": "Connect existing tools into unified spec-driven workflow"
+        },
+        {
+          "@type": "Service",
+          "name": "Team Training",
+          "description": "Comprehensive training on spec-driven methodologies"
+        },
+        {
+          "@type": "Service",
+          "name": "Quality Assurance",
+          "description": "Automated testing pipelines that validate specifications"
+        },
+        {
+          "@type": "Service",
+          "name": "Scaling & Optimization",
+          "description": "Expand successful pilots across your organization"
+        }
+      ]
+    }
+  </script>
+
+  <!-- Local Business structured data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Spec-Driven Consulting",
+      "image": "https://specdriven.app/logo.png",
+      "priceRange": "$$$$",
+      "telephone": "+1-555-SPEC-DRIVEN",
+      "email": "leads@specdriven.app",
+      "url": "https://specdriven.app",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "37.7749",
+        "longitude": "-122.4194"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday"
+        ],
+        "opens": "09:00",
+        "closes": "18:00"
+      },
+      "serviceArea": {
+        "@type": "Country",
+        "name": "United States"
+      }
+    }
+  </script>
+
+  <!-- FAQ structured data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is spec-driven development?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Spec-driven development is a methodology where business requirements are written as executable specifications that can be automatically converted into code, tests, and documentation using AI agents."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How long does implementation take?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Our proven 3-step methodology typically takes 3-6 months: 1-2 weeks for assessment, 4-6 weeks for pilot implementation, and 3-6 months for full scaling across teams."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What tools do you integrate with?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We integrate with popular tools including Aha! (product management), Figma (design), Jira (project management), XRay (test management), and many others to create a unified workflow."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What results can we expect?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Typical results after 6 months include 40% faster delivery, 60% fewer defects, 50% less rework, and 80% better team alignment around requirements."
+          }
+        }
+      ]
+    }
+  </script>
+</Layout>

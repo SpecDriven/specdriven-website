@@ -1,0 +1,372 @@
+---
+// Calendly modal component with lazy loading and accessibility features
+---
+
+<!-- Calendly Modal Container -->
+<div
+  id="calendly-modal-overlay"
+  class="fixed inset-0 z-50 hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="calendly-modal-title"
+>
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+
+  <!-- Modal Content -->
+  <div class="fixed inset-0 overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-6">
+      <div
+        id="calendly-modal-content"
+        class="relative transform overflow-hidden rounded-2xl bg-white shadow-2xl transition-all w-full max-w-4xl max-h-[90vh]"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <h2 id="calendly-modal-title" class="text-lg font-semibold text-gray-900">
+            Schedule Assessment Call
+          </h2>
+          <button
+            id="calendly-modal-close"
+            class="rounded-lg p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Close modal"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6L18 18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Calendly Widget Container -->
+        <div id="calendly-widget-container" class="bg-white">
+          <!-- Loading State -->
+          <div id="calendly-loading" class="flex items-center justify-center h-96">
+            <div class="text-center">
+              <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-primary-600 mx-auto mb-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p class="text-gray-600">Loading calendar...</p>
+            </div>
+          </div>
+
+          <!-- Error State -->
+          <div id="calendly-error" class="hidden p-8 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+              Unable to Load Calendar
+            </h3>
+            <p class="text-gray-600 mb-6">
+              We're having trouble loading the calendar widget. You can still schedule a call directly.
+            </p>
+            <div class="space-y-3">
+              <a
+                href="https://calendly.com/your-handle/assessment"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-primary inline-flex items-center"
+              >
+                Open in New Tab
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+              </a>
+              <div class="text-center">
+                <p class="text-sm text-gray-500">or</p>
+                <a href="mailto:leads@specdriven.app" class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                  Send us an email
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendly Widget will be injected here -->
+          <div id="calendly-widget" class="hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { loadCalendlyScript } from '../lib/calendly';
+
+  class CalendlyModal {
+    private overlay: HTMLElement | null = null;
+    private content: HTMLElement | null = null;
+    private closeButton: HTMLElement | null = null;
+    private widgetContainer: HTMLElement | null = null;
+    private loadingElement: HTMLElement | null = null;
+    private errorElement: HTMLElement | null = null;
+    private widgetElement: HTMLElement | null = null;
+    private isOpen: boolean = false;
+    private currentUrl: string = '';
+
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      this.overlay = document.getElementById('calendly-modal-overlay');
+      this.content = document.getElementById('calendly-modal-content');
+      this.closeButton = document.getElementById('calendly-modal-close');
+      this.widgetContainer = document.getElementById('calendly-widget-container');
+      this.loadingElement = document.getElementById('calendly-loading');
+      this.errorElement = document.getElementById('calendly-error');
+      this.widgetElement = document.getElementById('calendly-widget');
+
+      this.setupEventListeners();
+    }
+
+    private setupEventListeners(): void {
+      // Close button
+      this.closeButton?.addEventListener('click', () => this.close());
+
+      // Close on overlay click
+      this.overlay?.addEventListener('click', (e) => {
+        if (e.target === this.overlay) {
+          this.close();
+        }
+      });
+
+      // Close on escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen) {
+          this.close();
+        }
+      });
+
+      // Prevent scrolling when modal is open
+      this.overlay?.addEventListener('wheel', (e) => {
+        if (this.isOpen) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+
+    public async open(url?: string): Promise<void> {
+      const calendlyUrl = url || import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/your-handle/assessment';
+      this.currentUrl = calendlyUrl;
+
+      if (!this.overlay) return;
+
+      // Show modal
+      this.overlay.classList.remove('hidden');
+      this.isOpen = true;
+
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+
+      // Focus management
+      this.trapFocus();
+
+      // Show loading state
+      this.showLoading();
+
+      try {
+        // Load Calendly script if needed
+        await this.ensureCalendlyLoaded();
+
+        // Initialize widget
+        await this.initializeWidget(calendlyUrl);
+
+        // Hide loading, show widget
+        this.showWidget();
+
+      } catch (error) {
+        console.error('Failed to load Calendly widget:', error);
+        this.showError();
+      }
+    }
+
+    public close(): void {
+      if (!this.overlay || !this.isOpen) return;
+
+      // Hide modal
+      this.overlay.classList.add('hidden');
+      this.isOpen = false;
+
+      // Restore body scroll
+      document.body.style.overflow = '';
+
+      // Clean up widget
+      this.cleanupWidget();
+
+      // Return focus to trigger element
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement && activeElement.blur) {
+        activeElement.blur();
+      }
+    }
+
+    private async ensureCalendlyLoaded(): Promise<void> {
+      if (window.Calendly) return;
+
+      await loadCalendlyScript();
+
+      // Wait for Calendly to be available
+      let attempts = 0;
+      while (!window.Calendly && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+      }
+
+      if (!window.Calendly) {
+        throw new Error('Calendly failed to load');
+      }
+    }
+
+    private async initializeWidget(url: string): Promise<void> {
+      if (!this.widgetElement || !window.Calendly) return;
+
+      // Clear previous widget
+      this.widgetElement.innerHTML = '';
+
+      // Initialize inline widget
+      window.Calendly.initInlineWidget({
+        url,
+        parentElement: this.widgetElement,
+        prefill: {},
+        utm: this.getUTMParams(),
+      });
+
+      // Wait for widget to load
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    private getUTMParams(): Record<string, string> {
+      const params: Record<string, string> = {};
+      const urlParams = new URLSearchParams(window.location.search);
+
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(param => {
+        const value = urlParams.get(param);
+        if (value) {
+          params[param] = value;
+        }
+      });
+
+      return params;
+    }
+
+    private showLoading(): void {
+      this.loadingElement?.classList.remove('hidden');
+      this.errorElement?.classList.add('hidden');
+      this.widgetElement?.classList.add('hidden');
+    }
+
+    private showWidget(): void {
+      this.loadingElement?.classList.add('hidden');
+      this.errorElement?.classList.add('hidden');
+      this.widgetElement?.classList.remove('hidden');
+    }
+
+    private showError(): void {
+      this.loadingElement?.classList.add('hidden');
+      this.errorElement?.classList.remove('hidden');
+      this.widgetElement?.classList.add('hidden');
+
+      // Update error link with current URL
+      const errorLink = this.errorElement?.querySelector('a[href*="calendly.com"]');
+      if (errorLink && this.currentUrl) {
+        errorLink.setAttribute('href', this.currentUrl);
+      }
+    }
+
+    private cleanupWidget(): void {
+      if (this.widgetElement) {
+        this.widgetElement.innerHTML = '';
+      }
+    }
+
+    private trapFocus(): void {
+      if (!this.content) return;
+
+      const focusableElements = this.content.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      ) as NodeListOf<HTMLElement>;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      // Focus first element
+      if (firstElement) {
+        firstElement.focus();
+      }
+
+      // Trap focus within modal
+      this.content.addEventListener('keydown', (e) => {
+        if (e.key !== 'Tab') return;
+
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      });
+    }
+  }
+
+  // Initialize modal
+  let calendlyModal: CalendlyModal | null = null;
+
+  if (typeof window !== 'undefined') {
+    calendlyModal = new CalendlyModal();
+
+    // Make it globally available for the Calendly utility functions
+    (window as any).calendlyModal = calendlyModal;
+  }
+
+  // Export for use in other components
+  export { calendlyModal };
+</script>
+
+<style>
+  /* Ensure modal appears above everything */
+  #calendly-modal-overlay {
+    z-index: 9999;
+  }
+
+  /* Smooth transitions */
+  #calendly-modal-overlay {
+    transition: opacity 0.3s ease-out;
+  }
+
+  #calendly-modal-content {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  }
+
+  /* Calendly widget specific styles */
+  #calendly-widget {
+    min-height: 600px;
+    max-height: 70vh;
+  }
+
+  /* Remove Calendly branding if needed */
+  #calendly-widget .calendly-badge-widget {
+    display: none !important;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    #calendly-modal-content {
+      margin: 1rem;
+      max-height: calc(100vh - 2rem);
+    }
+
+    #calendly-widget {
+      min-height: 500px;
+      max-height: 60vh;
+    }
+  }
+</style>

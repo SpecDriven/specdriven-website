@@ -1,0 +1,19 @@
+# Cloudflare Pages Redirects Configuration
+# URL management for Spec-Driven Consulting website
+
+# Redirect www to apex domain
+https://www.specdriven.app/* https://specdriven.app/:splat 301!
+
+# Redirect common alternative URLs to main sections
+/contact /  302
+/services /  302
+/about /  302
+
+# Future blog redirection (placeholder)
+/blog /  302
+
+# Redirect old URLs if migrating from another site
+# /old-path /new-path 301
+
+# Catch-all for non-existent pages - redirect to home
+/* /  404

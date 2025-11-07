@@ -1,0 +1,45 @@
+{
+  "name": "specdriven-website",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Spec-Driven Consulting marketing website",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "sync": "astro sync",
+    "lint": "prettier --check .",
+    "format": "prettier --write .",
+    "test:lighthouse": "lighthouse http://localhost:4321 --chrome-flags='--headless' --output=json --output-path=./lighthouse-report.json",
+    "test:a11y": "pa11y http://localhost:4321"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.0",
+    "@astrojs/check": "^0.9.3",
+    "astro": "^4.15.0",
+    "tailwindcss": "^3.4.0",
+    "lucide-astro": "^0.441.0",
+    "typescript": "^5.6.0",
+    "@fontsource/inter": "^5.0.0",
+    "@fontsource/jetbrains-mono": "^5.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.15",
+    "@types/node": "^22.5.0",
+    "prettier": "^3.3.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "lighthouse": "^12.2.0",
+    "pa11y": "^8.0.0"
+  },
+  "keywords": [
+    "astro",
+    "tailwindcss",
+    "marketing",
+    "consulting",
+    "spec-driven-development"
+  ],
+  "author": "Spec-Driven Consulting",
+  "license": "MIT"
+}
