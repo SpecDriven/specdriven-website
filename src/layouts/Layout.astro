@@ -1,5 +1,6 @@
 ---
 // Base layout with SEO, performance optimization, and accessibility features
+import '../styles/global.css';
 export interface Props {
   title: string;
   description: string;
@@ -176,7 +177,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://specdriv
     </style>
 
     <!-- Global Styles -->
-    <link rel="stylesheet" href="/src/styles/global.css" />
 
     <!-- Analytics -->
     <!-- Google Analytics 4 (replace with your tracking ID) -->

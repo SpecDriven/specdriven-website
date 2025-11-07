@@ -1,6 +1,19 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
+  safelist: [
+    'btn-primary',
+    'btn-secondary',
+    'btn-ghost',
+    'glass',
+    'sticky',
+    'bg-gradient-primary',
+    'bg-gradient-emerald',
+    'bg-gradient-amber',
+    'bg-gradient-dark',
+    'shadow-purple',
+    'shadow-indigo'
+  ],
   theme: {
     extend: {
       fontFamily: {
